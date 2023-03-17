@@ -16,9 +16,9 @@ public class QuestionRepositoryImplTest {
     private final String url = "jdbc:postgresql://localhost:5432/postgres";
     private final String password = "root";
     private Connection connection;
+    private QuestionRepository questionRepository;
 
     private final Question question = new Question("polymorphism", "what is basic principle");
-    QuestionRepository questionRepository;
     private String lastRecord =
             """
                     select * from question where id = (select max(id) from question)
