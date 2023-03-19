@@ -1,8 +1,8 @@
 package repository;
 
+import exceptions.QuestionSQLException;
 import model.Question;
 import repository.dao.QuestionRepository;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,27 +12,40 @@ import java.util.List;
 
 public class QuestionRepositoryImpl implements QuestionRepository {
 
-    private String findById =
+    private final String findById =
             """
                     select * from question where id = ?
             """;
 
-    private String findByTopic =
+    private final String findByTopic =
             """
                     select * from question where topic = ?
             """;
 
-    private String saveQuestion =
+    private final String getAllQuest =
+            """
+                    select * from question
+            """;
+
+    private final String getRndByTopic =
+            """
+                    select * from question 
+                    where topic = ? 
+                    order by RANDOM() 
+                    limit 1
+            """;
+
+    private final String saveQuestion =
             """
                     insert into question(topic, text) values (?,?)
             """;
 
-    private String updateQuestion =
+    private final String updateQuestion =
             """
                     update question set topic = ?, text = ? where id = ?
             """;
 
-    private String deleteById =
+    private final String deleteById =
             """
                     delete from question where id = ?
             """;
@@ -48,15 +61,10 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         try {
             PreparedStatement ps = connection.prepareStatement(findById);
             ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            return Question.builder()
-                    .id(rs.getInt("id"))
-                    .topic(rs.getString("topic"))
-                    .text(rs.getString("text"))
-                    .build();
+            List<Question> questions = getQuestionsList(ps);
+            return questions.size() > 0 ? questions.get(0) : null;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new QuestionSQLException(e.getMessage());
         }
     }
 
@@ -68,7 +76,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
             ps.setString(2, question.getText());
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new QuestionSQLException(e.getMessage());
         }
     }
 
@@ -81,7 +89,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
             ps.setInt(3, question.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new QuestionSQLException(e.getMessage());
         }
     }
 
@@ -92,7 +100,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
             ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new QuestionSQLException(e.getMessage());
         }
     }
 
@@ -101,18 +109,46 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         try {
             PreparedStatement ps = connection.prepareStatement(findByTopic);
             ps.setString(1, topic);
-            ResultSet rs = ps.executeQuery();
-            List<Question> questions = new ArrayList<>();
-            while(rs.next()) {
-                questions.add(Question.builder()
-                        .id(rs.getInt("id"))
-                        .topic(rs.getString("topic"))
-                        .text(rs.getString("text"))
-                        .build());
-            }
-            return questions;
+            return getQuestionsList(ps);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new QuestionSQLException(e.getMessage());
         }
     }
+
+    @Override
+    public List<Question> getAllQuestions() {
+        try {
+            PreparedStatement ps = connection.prepareStatement(getAllQuest);
+            return getQuestionsList(ps);
+        } catch (SQLException e) {
+            throw new QuestionSQLException(e.getMessage());
+        }
+    }
+
+    @Override
+    public Question getRndByTopic(String topic) {
+        try {
+            PreparedStatement ps = connection.prepareStatement(getRndByTopic);
+            ps.setString(1, topic);
+            List<Question> questions = getQuestionsList(ps);
+            return questions.size() > 0 ? questions.get(0) : null;
+        } catch (SQLException e) {
+            throw new QuestionSQLException(e.getMessage());
+        }
+    }
+
+    private List<Question> getQuestionsList(PreparedStatement ps) throws SQLException {
+        ResultSet rs = ps.executeQuery();
+        List<Question> questions = new ArrayList<>();
+        while(rs.next()) {
+            questions.add(Question.builder()
+                    .id(rs.getInt("id"))
+                    .topic(rs.getString("topic"))
+                    .text(rs.getString("text"))
+                    .build());
+        }
+        return questions;
+    }
+
+
 }
