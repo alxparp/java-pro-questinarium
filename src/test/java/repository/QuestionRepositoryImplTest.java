@@ -1,20 +1,13 @@
 package repository;
 
 import model.Question;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import repository.dao.QuestionRepository;
-
 import java.sql.*;
-import java.util.List;
 
 public class QuestionRepositoryImplTest {
-
-    private final String user = "postgres";
-    private final String url = "jdbc:postgresql://localhost:5432/postgres";
-    private final String password = "root";
     private Connection connection;
     private QuestionRepository questionRepository;
 
@@ -26,13 +19,8 @@ public class QuestionRepositoryImplTest {
 
     @Before
     public void init() throws SQLException {
-        connection = DriverManager.getConnection(url, user, password);
+        connection = ConnectionSingleton.getConnection();
         questionRepository = new QuestionRepositoryImpl(connection);
-    }
-
-    @After
-    public void destroy() throws SQLException {
-        connection.close();
     }
 
     @Test
@@ -78,14 +66,14 @@ public class QuestionRepositoryImplTest {
         questionRepository.delete(updatedQuestion.getId());
     }
 
-    @Test (expected = RuntimeException.class)
+    @Test
     public void deleteTest() {
         questionRepository.save(question);
 
         Question insertedQuestion = getLastRecord(questionRepository);
         questionRepository.delete(insertedQuestion.getId());
 
-        questionRepository.get(insertedQuestion.getId());
+        Assert.assertNull(questionRepository.get(insertedQuestion.getId()));
     }
 
     private Question getLastRecord(QuestionRepository questionRepository) {

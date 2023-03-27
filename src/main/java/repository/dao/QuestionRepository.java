@@ -14,4 +14,8 @@ public interface QuestionRepository {
 
     List<Question> getByTopic(String topic);
 
+    List<Question> getAllQuestions();
+
+    Question getRndByTopic(String topic);
+
 }
