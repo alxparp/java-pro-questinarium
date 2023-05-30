@@ -1,12 +1,13 @@
 package service;
 
+import config.HibConfig;
 import model.AnswerType;
 import model.Attempt;
 import model.Question;
+import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import repository.AttemptRepositoryImpl;
-import repository.ConnectionSingleton;
 import repository.QuestionRepositoryImpl;
 import repository.dao.AttemptRepository;
 import repository.dao.QuestionRepository;
@@ -35,9 +36,11 @@ public class QuestionServiceTest {
 
     @Test
     public void getRndQuestionByTopicTest() {
+        SessionFactory sessionFactory = HibConfig.getSessionJavaConfigFactory();
+
         QuestionService questionService = new QuestionService(
-                new QuestionRepositoryImpl(ConnectionSingleton.getConnection()),
-                new AttemptRepositoryImpl(ConnectionSingleton.getConnection()));
+                new QuestionRepositoryImpl(sessionFactory),
+                new AttemptRepositoryImpl(sessionFactory));
         System.out.println(questionService.getRndQuestionByTopic("INCAPSULATION"));
     }
 
