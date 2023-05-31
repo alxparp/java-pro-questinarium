@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class FromDB implements Query {
 
-    private QuestionService questionService;
+    private final QuestionService questionService;
 
     public FromDB(QuestionService questionService) {
         this.questionService = questionService;

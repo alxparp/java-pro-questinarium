@@ -13,8 +13,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class QuestionService {
 
-    private QuestionRepository questionRepository;
-    private AttemptRepository attemptRepository;
+    private final QuestionRepository questionRepository;
+    private final AttemptRepository attemptRepository;
 
     private final Map<String, List<Question>> questionsByTopic = new HashMap<>();
 

@@ -21,14 +21,18 @@ public class Main {
 
     public static void main(String[] args) {
 
+        // Hibernate
         SessionFactory sessionFactory = HibConfig.getSessionJavaConfigFactory();
 
+        // Repositories
         AttemptRepository attemptRepository = new AttemptRepositoryImpl(sessionFactory);
         QuestionRepository questionRepository = new QuestionRepositoryImpl(sessionFactory);
 
+        // Services
         QuestionService questionService = new QuestionService(questionRepository,attemptRepository);
         AttemptService attemptService = new AttemptService(attemptRepository);
 
+        // Factory
         QueryFactory queryFactory = new QueryFactory(questionService, attemptService);
 
         Scanner scanner = new Scanner(System.in);
@@ -53,7 +57,7 @@ public class Main {
         } while (scanner.next().equals("yes"));
     }
 
-    public static boolean checkIntAndArrayOut(String operation) {
+    private static boolean checkIntAndArrayOut(String operation) {
         ValidationExecutor executor = new ValidationExecutor();
         boolean flag = executor.execute(new IntegerValidator(operation));
         return flag && executor.execute(new ArrayOutOfBoundValidator(Integer.parseInt(operation), OperationType.values().length));

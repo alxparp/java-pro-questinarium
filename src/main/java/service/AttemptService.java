@@ -7,7 +7,7 @@ import java.util.List;
 
 public class AttemptService {
 
-    private AttemptRepository attemptRepository;
+    private final AttemptRepository attemptRepository;
 
     public AttemptService(AttemptRepository attemptRepository) {
         this.attemptRepository = attemptRepository;

@@ -1,14 +1,11 @@
 package repository;
 
-import exceptions.AttemptSQLException;
-import model.AnswerType;
 import model.Attempt;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import repository.dao.AttemptRepository;
-import java.sql.*;
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class AttemptRepositoryImpl implements AttemptRepository {

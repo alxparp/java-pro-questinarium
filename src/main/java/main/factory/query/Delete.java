@@ -1,6 +1,5 @@
 package main.factory.query;
 
-import lombok.Cleanup;
 import main.notification.Notification;
 import main.validation.ValidationExecutor;
 import main.validation.routines.IntegerValidator;
@@ -11,7 +10,7 @@ import java.util.Scanner;
 
 public class Delete implements Query {
 
-    private QuestionService questionService;
+    private final QuestionService questionService;
 
     public Delete(QuestionService questionService) {
         this.questionService = questionService;
