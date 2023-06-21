@@ -8,8 +8,8 @@ import service.QuestionService;
 
 public class QueryFactory {
 
-    private QuestionService questionService;
-    private AttemptService attemptService;
+    private final QuestionService questionService;
+    private final AttemptService attemptService;
 
     public QueryFactory(QuestionService questionService, AttemptService attemptService) {
         this.questionService = questionService;

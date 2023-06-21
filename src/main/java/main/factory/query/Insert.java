@@ -1,6 +1,5 @@
 package main.factory.query;
 
-import lombok.Cleanup;
 import model.Question;
 import service.QuestionService;
 
@@ -8,7 +7,7 @@ import java.util.Scanner;
 
 public class Insert implements Query {
 
-    private QuestionService questionService;
+    private final QuestionService questionService;
 
     public Insert(QuestionService questionService) {
         this.questionService = questionService;

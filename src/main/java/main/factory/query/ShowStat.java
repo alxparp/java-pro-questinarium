@@ -6,12 +6,13 @@ import java.util.List;
 
 public class ShowStat implements Query {
 
-    private AttemptService attemptService;
+    private final AttemptService attemptService;
 
     public ShowStat(AttemptService attemptService) {
         this.attemptService = attemptService;
     }
 
+    @Override
     public void implement() {
         List<Attempt> attempts = attemptService.getAllAttempts();
         System.out.println("------------------");

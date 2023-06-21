@@ -1,14 +1,14 @@
 package main;
 
-import lombok.Cleanup;
+import config.HibConfig;
 import main.factory.query.OperationType;
 import main.factory.QueryFactory;
 import main.factory.query.Query;
 import main.validation.ValidationExecutor;
 import main.validation.routines.ArrayOutOfBoundValidator;
 import main.validation.routines.IntegerValidator;
+import org.hibernate.SessionFactory;
 import repository.AttemptRepositoryImpl;
-import repository.ConnectionSingleton;
 import repository.QuestionRepositoryImpl;
 import repository.dao.AttemptRepository;
 import repository.dao.QuestionRepository;
@@ -21,15 +21,21 @@ public class Main {
 
     public static void main(String[] args) {
 
-        AttemptRepository attemptRepository = new AttemptRepositoryImpl(ConnectionSingleton.getConnection());
-        QuestionRepository questionRepository = new QuestionRepositoryImpl(ConnectionSingleton.getConnection());
+        // Hibernate
+        SessionFactory sessionFactory = HibConfig.getSessionJavaConfigFactory();
 
-        Scanner scanner = new Scanner(System.in);
+        // Repositories
+        AttemptRepository attemptRepository = new AttemptRepositoryImpl(sessionFactory);
+        QuestionRepository questionRepository = new QuestionRepositoryImpl(sessionFactory);
 
+        // Services
         QuestionService questionService = new QuestionService(questionRepository,attemptRepository);
         AttemptService attemptService = new AttemptService(attemptRepository);
 
+        // Factory
         QueryFactory queryFactory = new QueryFactory(questionService, attemptService);
+
+        Scanner scanner = new Scanner(System.in);
 
         do {
             System.out.println("Select the number of operation:");
@@ -51,7 +57,7 @@ public class Main {
         } while (scanner.next().equals("yes"));
     }
 
-    public static boolean checkIntAndArrayOut(String operation) {
+    private static boolean checkIntAndArrayOut(String operation) {
         ValidationExecutor executor = new ValidationExecutor();
         boolean flag = executor.execute(new IntegerValidator(operation));
         return flag && executor.execute(new ArrayOutOfBoundValidator(Integer.parseInt(operation), OperationType.values().length));

@@ -2,7 +2,6 @@ package service;
 
 import model.AnswerType;
 import model.Attempt;
-import model.Question;
 import org.junit.Assert;
 import org.junit.Test;
 import repository.dao.AttemptRepository;

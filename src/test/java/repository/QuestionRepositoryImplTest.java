@@ -1,26 +1,27 @@
 package repository;
 
+import config.HibConfig;
 import model.Question;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import repository.dao.QuestionRepository;
-import java.sql.*;
+import java.util.List;
 
 public class QuestionRepositoryImplTest {
-    private Connection connection;
     private QuestionRepository questionRepository;
 
     private final Question question = new Question("polymorphism", "what is basic principle");
-    private String lastRecord =
-            """
-                    select * from question where id = (select max(id) from question)
-            """;
+
+    private SessionFactory sessionFactory;
 
     @Before
-    public void init() throws SQLException {
-        connection = ConnectionSingleton.getConnection();
-        questionRepository = new QuestionRepositoryImpl(connection);
+    public void init() {
+        sessionFactory = HibConfig.getSessionJavaConfigFactory();
+        questionRepository = new QuestionRepositoryImpl(sessionFactory);
     }
 
     @Test
@@ -36,7 +37,7 @@ public class QuestionRepositoryImplTest {
     @Test
     public void saveTest() {
         questionRepository.save(question);
-        Question insertedQuestion = getLastRecord(questionRepository);
+        Question insertedQuestion = getLastRecord();
 
         Assert.assertEquals(question.getText(), insertedQuestion.getText());
         Assert.assertEquals(question.getTopic(), insertedQuestion.getTopic());
@@ -52,7 +53,7 @@ public class QuestionRepositoryImplTest {
         questionRepository.save(question);
 
         // UPDATE
-        Question insertedQuestion = getLastRecord(questionRepository);
+        Question insertedQuestion = getLastRecord();
         questionRepository.update(new Question(insertedQuestion.getId(), updatedTopic, question.getText()));
 
         // GET UPDATED
@@ -70,25 +71,26 @@ public class QuestionRepositoryImplTest {
     public void deleteTest() {
         questionRepository.save(question);
 
-        Question insertedQuestion = getLastRecord(questionRepository);
+        Question insertedQuestion = getLastRecord();
         questionRepository.delete(insertedQuestion.getId());
 
         Assert.assertNull(questionRepository.get(insertedQuestion.getId()));
     }
 
-    private Question getLastRecord(QuestionRepository questionRepository) {
-        try {
-            PreparedStatement ps = connection.prepareStatement(lastRecord);
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            return Question.builder()
-                    .id(rs.getInt("id"))
-                    .topic(rs.getString("topic"))
-                    .text(rs.getString("text"))
-                    .build();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private Question getLastRecord() {
 
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        ;
+
+        List<Question> questions = session.createQuery("FROM Question q ORDER BY q.id DESC", Question.class)
+                .list();
+
+        Question lastQuestion = questions.size() > 0 ? questions.get(0) : null;
+
+        transaction.commit();
+        session.close();
+
+        return lastQuestion;
+    }
 }

@@ -1,13 +1,12 @@
 package main.factory.query;
 
-import lombok.Cleanup;
 import model.Question;
 import service.QuestionService;
 import java.util.Scanner;
 
 public class FromMemory implements Query {
 
-    private QuestionService questionService;
+    private final QuestionService questionService;
 
     public FromMemory(QuestionService questionService) {
         this.questionService = questionService;
