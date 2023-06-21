@@ -46,8 +46,8 @@ At startup, a choice of operations appears: adding a question, deleting, showing
 8. IOC
 9. GIT
 10. Patterns
-   - Singleton
-   - Factory Method
+	- Singleton
+	- Factory Method
 
 
 
